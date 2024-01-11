@@ -10,10 +10,12 @@
 // @grant        none
 // ==/UserScript==
 
+//you can use https://asia.pokemon-card.com/sg/deck-build/ to build you deck, and output it to csv by "output PTCG-SIM csv" button
+
 
 // 添加一个按钮到页面上
 var button = document.createElement('button');
-button.textContent = '導出PTCG-SIM制式';
+button.textContent = 'output PTCG-SIM csv';
 button.style.position = 'fixed';
 button.style.bottom = '150px';
 button.style.right = '100px';
@@ -30,7 +32,7 @@ document.body.appendChild(button);
 //按钮点击效果
 button.addEventListener('click', function() {
     //弹窗提醒
-    alert("如果图片还在加载，导出的卡组可能不全");
+    alert("Please wait for the image to load before exporting");
     //获取卡名形成列表，计算各种卡片的数量以便确定卡片类型
     var cardNameGroup=[];
     var countPokemon=0;
