@@ -1,13 +1,16 @@
 // ==UserScript==
-// @name         导出繁中官网构筑器牌组为PTCG-SIM格式
-// @namespace    http://tampermonkey.net/
+// @name         PTCG繁中官网构筑器导出PTCG-SIM-CSV格式
 // @version      1.2
 // @description  导出繁中官网构筑器牌组为PTCG-SIM格式
-// @author       Appix
+// @author       akatsukikyoko
 // @match        https://asia.pokemon-card.com/tw/deck-build/recipe/*
 // @match        https://asia.pokemon-card.com/hk/deck-build/recipe/*
 // @match        https://asia.pokemon-card.com/sg/deck-build/recipe/*
 // @grant        none
+// @license MIT
+// @namespace https://greasyfork.org/users/1249114
+// @downloadURL https://update.greasyfork.org/scripts/485022/PTCG%E7%B9%81%E4%B8%AD%E5%AE%98%E7%BD%91%E6%9E%84%E7%AD%91%E5%99%A8%E5%AF%BC%E5%87%BAPTCG-SIM-CSV%E6%A0%BC%E5%BC%8F.user.js
+// @updateURL https://update.greasyfork.org/scripts/485022/PTCG%E7%B9%81%E4%B8%AD%E5%AE%98%E7%BD%91%E6%9E%84%E7%AD%91%E5%99%A8%E5%AF%BC%E5%87%BAPTCG-SIM-CSV%E6%A0%BC%E5%BC%8F.meta.js
 // ==/UserScript==
 
 

@@ -1,11 +1,14 @@
 // ==UserScript==
-// @name        ptcgsim汉化
-// @namespace   Violentmonkey Scripts
+// @name        PTCG-SIM汉化
 // @match       *://*ptcgsim.online/*
 // @grant       none
-// @version     1.2
-// @author      -
-// @description 2022/11/13 09:04:46
+// @version     1.3.4
+// @author      akatsukikyoko
+// @description 宝可梦卡牌模拟器PTCG-SIM（https://ptcgsim.online）的简单汉化工具
+// @license MIT
+// @namespace Violentmonkey Scripts
+// @downloadURL https://update.greasyfork.org/scripts/485021/PTCG-SIM%E6%B1%89%E5%8C%96.user.js
+// @updateURL https://update.greasyfork.org/scripts/485021/PTCG-SIM%E6%B1%89%E5%8C%96.meta.js
 // ==/UserScript==
 
 var allNodes = document.body.querySelectorAll('*')
@@ -14,8 +17,7 @@ var allNodeArr = Array.from(allNodes)
 
 var textObj = {
 
-"@version": "1.1",
-    //功能
+  //功能
   "Attack": "招式",
   "Pass": "跳过",
   "Set Up": "开始",
@@ -34,6 +36,7 @@ var textObj = {
   "Hide containers":"隐藏分区",
   "Watch Tutorial":"查看教程",
   "Upload File":"文件上传",
+  "Change Card Back":"更换卡背",
   //介绍文本
   "Welcome to PTCG-sim!":"欢迎来到PTCG-sim！",
   //说明
@@ -92,10 +95,13 @@ var textObj = {
   "Flip board ":"换向",
   "Announce mulligan ":"重抽（开始阶段无基础）",
   "Close popups ":"关闭弹窗",
+  "Toggle ability/effect":"使用特性/效果",
+  "Reveal/hide card":"翻开/盖住卡牌",
   //二级菜单
   "Clear battle log":"清理战斗记录",
   "Export battle log":"导出战斗记录",
   "Confirm":"确认",
+  "Undo":"撤销",
   "Cancel":"取消",
   "Save":"保存",
   "Shuffle deck":"洗牌",
@@ -123,7 +129,7 @@ var textObj = {
   "Prizes":"奖赏卡",
   "Deck":"牌库",
   "Playboard":"展示区",
-  "Toggle ability":"标记特性使用",
+  "Toggle ability/effect":"标记特性/效果使用",
   "Damage counter":"伤害指示物",
   "Shuffle prizes":"洗切奖赏卡",
   "Reveal/hide prizes":"展示/隐藏奖赏卡",
@@ -135,9 +141,12 @@ var textObj = {
   "Reveal/hide hand":"展示/隐藏手牌",
   "Reveal/hide random card":"展示/隐藏随机卡牌",
   "Special condition":"特殊状态",
+  "Add/Toggle ":"增加标记",
+  "Rotate BREAK ":"旋转BREAK",
+  "Undo ":"撤销",
 
 
-  //别的
+  //Other
   "Shuffle":"洗牌",
   "Close":"关闭",
   "Shuffle all to Deck":"全部洗回牌库",
@@ -145,12 +154,15 @@ var textObj = {
   "Discard all":"全部丢弃",
   "Shuffle all":"全部洗回牌库",
   "Lost Zone all":"全部放逐",
+  'Shuffle to bottom':'洗入牌堆底',
   "To Hand":"加入手牌",
   "Leave in play":"退出",
   "Looking at cards...":"查看卡牌",
   "Move attached cards":"移动附上的卡牌",
   "Alt (1P only)":"单人模式对手卡组",
   "Main":"主卡组",
+  "Spectator mode":"观战模式",
+  "Hide opponent's hand (1P mode)":"隐藏1p玩家手牌（1p模式）",
 
 }
 
@@ -158,58 +170,89 @@ let chatboxContent;
 let chatboxContent_group;
 let intervalId = setInterval(function() {
   try{
-  chatboxContent_group = document.querySelectorAll("p");
+  chatboxContent_group = document.querySelectorAll('p.self-text, p.announcement, p.opp-text');
+  //console.log(chatboxContent_group);
   for (let i=0;i<chatboxContent_group.length;i++){
-    if(i>chatboxContent_group.length-10){
+    if(i>chatboxContent_group.length-15){
       chatboxContent=chatboxContent_group[i].innerText;
-      chatboxContent = chatboxContent.replace(/moved/g, '移动');
-      chatboxContent = chatboxContent.replace(/move/g, '移动');
-      chatboxContent = chatboxContent.replace(/tails/g, '反面');
-      chatboxContent = chatboxContent.replace(/heads/g, '正面');
-      chatboxContent = chatboxContent.replace(/flipped/g, '投出了');
-      chatboxContent = chatboxContent.replace(/attacked/g, '使用招式');
-      chatboxContent = chatboxContent.replace(/passed/g, '回合结束');
-      chatboxContent = chatboxContent.replace(/deck/g, '牌库');
-      chatboxContent = chatboxContent.replace(/discard/g, '弃牌区');
-      chatboxContent = chatboxContent.replace(/stadium/g, '竞技场');
-      chatboxContent = chatboxContent.replace(/hand/g, '手牌');
-      chatboxContent = chatboxContent.replace(/in to/g, '到');
-      chatboxContent = chatboxContent.replace(/card(s)/g, '卡牌');
-      chatboxContent = chatboxContent.replace(/stopped/g, '停止');
-      chatboxContent = chatboxContent.replace(/card/g, '卡牌');
-      chatboxContent = chatboxContent.replace(/shuffled /g, '洗切');
-      chatboxContent = chatboxContent.replace(/lost zone/g, '放逐区');
-      chatboxContent = chatboxContent.replace(/prizes/g, '奖赏卡');
-      chatboxContent = chatboxContent.replace(/bench/g, '备战区');
-      chatboxContent = chatboxContent.replace(/board/g, '展示区');
-      chatboxContent = chatboxContent.replace(/drew for turn/g, '回合开始抽牌');
-      chatboxContent = chatboxContent.replace(/attached/g, '附上了');
-      chatboxContent = chatboxContent.replace(/looked at /g, '查看了');
+      //简介
+      chatboxContent = chatboxContent.replace('PTCG-sim is an', ' PTCG-sim是一个');
+      chatboxContent = chatboxContent.replace('open-source', '开源');
+      chatboxContent = chatboxContent.replace(' tool to simulate card games. It supports single player and online multiplayer.', '的卡牌游戏模拟工具，它支持单人模式或双人在线模式');
+      chatboxContent = chatboxContent.replace('Import your decklist by clicking the “Import” tab above, then press “Set Up” to start a game.', '用 导入 菜单导入你的卡组，然后按 开始 来开始游戏');
+      chatboxContent = chatboxContent.replace('Drag or use keybinds (hold ', ' 长按');
+      chatboxContent = chatboxContent.replace(') to move cards. Happy testing!', '确认移动卡牌的快捷键，祝您测试愉快');
+
+      //翻译
+      chatboxContent = chatboxContent.replace(/ put/g, ' 将');
+      chatboxContent = chatboxContent.replace(/ lost-zoned/g, ' 放逐了');
+      chatboxContent = chatboxContent.replace(/ moved/g, ' 移动');
+      chatboxContent = chatboxContent.replace(/ move/g, '  移动');
+      chatboxContent = chatboxContent.replace(/ tails/g, ' 反面');
+      chatboxContent = chatboxContent.replace(/ heads/g, ' 正面');
+      chatboxContent = chatboxContent.replace(/ flipped/g, ' 投出了');
+      chatboxContent = chatboxContent.replace(/ attacked/g, ' 使用招式');
+      chatboxContent = chatboxContent.replace(/ passed/g, ' 回合结束');
+      chatboxContent = chatboxContent.replace(/ deck/g, ' 牌库');
+      chatboxContent = chatboxContent.replace(/ discard/g, ' 弃牌区');
+      chatboxContent = chatboxContent.replace(/ stadium/g, ' 竞技场');
+      chatboxContent = chatboxContent.replace(/ hand/g, ' 手牌');
+      chatboxContent = chatboxContent.replace(/ in to/g, ' 到');
+      chatboxContent = chatboxContent.replace(/ card(s)/g, ' 卡牌');
+      chatboxContent = chatboxContent.replace(/ stopped/g, ' 停止');
+      chatboxContent = chatboxContent.replace(/ card/g, ' 卡牌');
+      chatboxContent = chatboxContent.replace(/ shuffled /g, ' 洗切');
+      chatboxContent = chatboxContent.replace(/ lost zone/g, ' 放逐区');
+      chatboxContent = chatboxContent.replace(/ prizes/g, ' 奖赏卡');
+      chatboxContent = chatboxContent.replace(/ bench/g, ' 备战区');
+      chatboxContent = chatboxContent.replace(/ board/g, ' 展示区');
+      chatboxContent = chatboxContent.replace(/ drew for turn/g, ' 回合开始抽牌');
+      chatboxContent = chatboxContent.replace(/ attached/g, ' 附上');
+      chatboxContent = chatboxContent.replace(/ looked at /g, ' 查看了');
       chatboxContent = chatboxContent.replace(/ of /g, '');
-      chatboxContent = chatboxContent.replace(/ card /g, '卡牌');
-      chatboxContent = chatboxContent.replace(/ top /g, '上方');
-      chatboxContent = chatboxContent.replace(/ in to /g, '加入');
-      chatboxContent = chatboxContent.replace(/setup/g, '开始');
-      chatboxContent = chatboxContent.replace(/hid /g, '隐藏了');
-      chatboxContent = chatboxContent.replace(/evolved/g, '进化');
-      chatboxContent = chatboxContent.replace(/drew/g, '抽');
-      chatboxContent = chatboxContent.replace(/bottom/g, '底下');
-      chatboxContent = chatboxContent.replace(/ and /g, '并');
-      chatboxContent = chatboxContent.replace(/their/g, '他的');
-      chatboxContent = chatboxContent.replace(/used/g, '使用了');
-      chatboxContent = chatboxContent.replace(/ability/g, '特性');
-      chatboxContent = chatboxContent.replace(/into/g, '到');
-      chatboxContent = chatboxContent.replace(/'s/g, '的');
-      chatboxContent = chatboxContent.replace(/revealed /g, '翻开');
-      chatboxContent = chatboxContent.replace(/ in /g, '在');
+      chatboxContent = chatboxContent.replace(/ card /g, ' 卡牌');
+      chatboxContent = chatboxContent.replace(/ top /g, ' 在上方的');
+      chatboxContent = chatboxContent.replace(/ in to /g, ' 加入');
+      chatboxContent = chatboxContent.replace(/ setup/g, ' 开始');
+      chatboxContent = chatboxContent.replace(/ hid /g, ' 隐藏了');
+      chatboxContent = chatboxContent.replace(/ evolved/g, ' 进化');
+      chatboxContent = chatboxContent.replace(/ drew/g, ' 抽');
+      chatboxContent = chatboxContent.replace(/ bottom/g, ' 底下');
+      chatboxContent = chatboxContent.replace(/ and/g, ' 并');
+      chatboxContent = chatboxContent.replace(/ their/g, ' 他的');
+      chatboxContent = chatboxContent.replace(/ used/g, ' 使用了');
+      chatboxContent = chatboxContent.replace(/ ability/g, ' 特性');
+      chatboxContent = chatboxContent.replace(/ into/g, ' 到');
+      chatboxContent = chatboxContent.replace(/ revealed /g, ' 翻开');
+      chatboxContent = chatboxContent.replace(/ in /g, ' 在');
       chatboxContent = chatboxContent.replace(/Blue /g, '蓝色方 ');
       chatboxContent = chatboxContent.replace(/Red /g, '红色方 ');
-      chatboxContent = chatboxContent.replace(/active/g, '战斗场');
-      chatboxContent = chatboxContent.replace(/ from /g, '从');
-      chatboxContent = chatboxContent.replace(/ to /g, '到');
-      chatboxContent = chatboxContent.replace(/imported/g, '导入了');
-      chatboxContent = chatboxContent.replace(/ has no more /g, '没有更多的');
-      chatboxContent = chatboxContent.replace(/ has an invalid /g, '无效');
+      chatboxContent = chatboxContent.replace(/ active/g, ' 战斗场');
+      chatboxContent = chatboxContent.replace(/ to /g, '->');
+      chatboxContent = chatboxContent.replace(/ took back /g, ' 撤回了 ');
+      chatboxContent = chatboxContent.replace(/ last /g, ' 最后的 ');
+      chatboxContent = chatboxContent.replace(/ imported/g, ' 导入了');
+      chatboxContent = chatboxContent.replace(/ has no more /g, ' 没有更多的');
+      chatboxContent = chatboxContent.replace(/ has an invalid /g, ' 无效');
+      chatboxContent = chatboxContent.replace(/ is looking through/g, ' 在查看');
+      chatboxContent = chatboxContent.replace(/ looking at/g, ' 查看');
+      chatboxContent = chatboxContent.replace('from', ' | ');
+
+
+      //二次润色
+      chatboxContent = chatboxContent.replace(' 卡牌(s)', ' 张卡牌');
+      chatboxContent = chatboxContent.replace(' 弃牌区ed', ' 丢弃了');
+      chatboxContent = chatboxContent.replace('卡牌牌库', ' 牌库中的卡牌');
+      chatboxContent = chatboxContent.replace('Blue的', '蓝色方的');
+      chatboxContent = chatboxContent.replace('Red的', '红色方的');
+      chatboxContent = chatboxContent.replace(' starting', ' 起始的');
+      chatboxContent = chatboxContent.replace(' set', ' 设置');
+      chatboxContent = chatboxContent.replace('底下牌库', '牌库底');
+      chatboxContent = chatboxContent.replace('top ', '顶端的 ');
+      chatboxContent = chatboxContent.replace('bottom ', '底端的 ');
+      chatboxContent = chatboxContent.replace("'s", ' 的');
+      chatboxContent = chatboxContent.replace('附上 张卡牌', '张附加的卡片');
+      chatboxContent = chatboxContent.replace('洗切prizes', '洗切奖赏卡');
 
       chatboxContent_group[i].innerText = chatboxContent;
       }
@@ -217,7 +260,7 @@ let intervalId = setInterval(function() {
   }catch (error) {
        console.error('Error occurred while monitoring chatbox content:', error);
   }
-}, 3000); // 每3秒执行一次
+}, 2000); // 每2秒执行一次
 
 var excutNode = ['IMG','BR','HR','FORM','SELECT','OPTION','INPUT','SCRIPT','STYLE','ts']
 
@@ -235,4 +278,4 @@ allNodeArr.forEach(item=>{
         })
     }
 })
-console.timeEnd('translate')
+console.timeEnd('translate');
