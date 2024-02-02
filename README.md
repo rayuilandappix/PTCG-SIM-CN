@@ -16,4 +16,4 @@ Originally a tool for the localization of PTCG-SIM, it has been expanded to incl
 
 By asiaOfficialWebside_to_ptcg-sim_EN.js.Now you can also use https://asia.pokemon-card.com/sg/deck-build/ to build your English deck, and output it to csv by "output PTCG-SIM csv" button.
 
-TampermonkeyスクリプトasiaOfficialWebside_to_ptcg-sim_JP.js は、日本公式のポケモンカードページからptcg simで使用可能なcsv形式をエクスポートすることができます、あなたの問題を解決する可能性があります
+TampermonkeyスクリプトasiaOfficialWebside_to_ptcg-sim_JP.js は、日本公式のポケモンカードページからptcg simで使用可能なcsv形式をエクスポートすることができます
